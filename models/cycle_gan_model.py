@@ -202,15 +202,12 @@ class CycleGANModel(BaseModel):
             self.backward_D_A()      # calculate gradients for D_A
             self.backward_D_B()      # calculate graidents for D_B
             self.optimizer_D.step()  # update D_A and D_B's weights
-            if _ < (self.opt.n_critic - 1):
-                self.set_requires_grad([self.netD_A, self.netD_B], False)  # Ds require no gradients when optimizing Gs
-                self.forward()      # compute fake images and reconstruction images.
-                self.set_requires_grad([self.netD_A, self.netD_B], True)
+            
         
         # G_A and G_B
         self.set_requires_grad([self.netD_A, self.netD_B], False)  # Ds require no gradients when optimizing Gs
         self.optimizer_G.zero_grad()  # set G_A and G_B's gradients to zero
-        self.backward_G(retain_graph=True)             # calculate gradients for G_A and G_B
+        self.backward_G()             # calculate gradients for G_A and G_B
         self.optimizer_G.step()       # update G_A and G_B's weights
 
 
