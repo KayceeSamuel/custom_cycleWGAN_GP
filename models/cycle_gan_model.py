@@ -195,7 +195,7 @@ class CycleGANModel(BaseModel):
 
         # D_A and D_B
         self.set_requires_grad([self.netD_A, self.netD_B], True)
-
+ #
         
         #Below was added as WCGAN implementation
         for _ in range(self.opt.n_critic):
