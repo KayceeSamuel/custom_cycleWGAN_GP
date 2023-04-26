@@ -218,7 +218,7 @@ class CycleGANModel(BaseModel):
         alpha = torch.rand(batch_size, 1, 1, 1).to(self.device)
         interpolates = (alpha * real_data + ((1 - alpha) * fake_data)).requires_grad_(True)
         d_interpolates = netD(interpolates)
-        fake = torch.ones(d_interpolates.size()).to(self.devices)
+        fake = torch.ones(d_interpolates.size()).to(self.device)
         gradients = torch.autograd.grad(
             outputs=d_interpolates,
             inputs=interpolates,
