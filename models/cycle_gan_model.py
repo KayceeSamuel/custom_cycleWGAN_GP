@@ -228,6 +228,8 @@ class CycleGANModel(BaseModel):
             only_inputs=True,
         )[0]
         gradients = gradients.view(gradients.size(0), -1)
+        gradient_penalty = ((gradients.norm(2, dim=1) - 1) ** 2).mean()
+        return gradient_penalty
 
     
     
