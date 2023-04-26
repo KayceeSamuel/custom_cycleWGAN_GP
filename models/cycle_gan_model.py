@@ -129,7 +129,7 @@ class CycleGANModel(BaseModel):
         """
         # Real
         pred_real = netD(real)
-        loss_D_real = self.criterionGAN(pred_real) #This is for cycle WGAN-GP
+        loss_D_real = -torch.mean(pred_real) #This is for cycle WGAN-GP
         #loss_D_real = self.criterionGAN(pred_real, True) #This is initial cycleGAN
 
         # Fake
