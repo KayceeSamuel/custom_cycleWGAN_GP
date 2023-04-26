@@ -5,6 +5,8 @@ import ntpath
 import time
 from . import util, html
 from subprocess import Popen, PIPE
+from torch.utils.tensorboard import SummaryWriter
+
 
 
 try:
@@ -79,12 +81,9 @@ class Visualizer():
         self.wandb_project_name = opt.wandb_project_name
         self.current_epoch = 0
         self.ncols = opt.display_ncols
+        self.writer = SummaryWriter('logs/' + opt.name)
 
-        if self.display_id > 0:  # connect to a visdom server given <display_port> and <display_server>
-            import visdom
-            self.vis = visdom.Visdom(server=opt.display_server, port=opt.display_port, env=opt.display_env)
-            if not self.vis.check_connection():
-                self.create_visdom_connections()
+
 
         if self.use_wandb:
             self.wandb_run = wandb.init(project=self.wandb_project_name, name=opt.name, config=opt) if not wandb.run else wandb.run
@@ -120,6 +119,8 @@ class Visualizer():
             epoch (int) - - the current epoch
             save_result (bool) - - if save the current results to an HTML file
         """
+        if self.vis is None:
+            return
         if self.display_id > 0:  # show images in the browser using visdom
             ncols = self.ncols
             if ncols > 0:        # show all the images in one visdom panel
@@ -169,6 +170,12 @@ class Visualizer():
                         idx += 1
                 except VisdomExceptionBase:
                     self.create_visdom_connections()
+
+        # Log images to TensorBoard
+        for label, image in visuals.items():
+            image_numpy = util.tensor2im(image)
+            image_tensor = torch.tensor(image_numpy.transpose([2, 0, 1]))
+            self.writer.add_image(f'{label}', image_tensor, epoch)
 
         if self.use_wandb:
             columns = [key for key, _ in visuals.items()]
@@ -222,18 +229,10 @@ class Visualizer():
             self.plot_data = {'X': [], 'Y': [], 'legend': list(losses.keys())}
         self.plot_data['X'].append(epoch + counter_ratio)
         self.plot_data['Y'].append([losses[k] for k in self.plot_data['legend']])
-        try:
-            self.vis.line(
-                X=np.stack([np.array(self.plot_data['X'])] * len(self.plot_data['legend']), 1),
-                Y=np.array(self.plot_data['Y']),
-                opts={
-                    'title': self.name + ' loss over time',
-                    'legend': self.plot_data['legend'],
-                    'xlabel': 'epoch',
-                    'ylabel': 'loss'},
-                win=self.display_id)
-        except VisdomExceptionBase:
-            self.create_visdom_connections()
+
+        for index, loss_name in enumerate(self.plot_data['legend']):
+            self.writer.add_scalar(loss_name, self.plot_data['Y'][-1][index], self.plot_data['X'][-1])
+
         if self.use_wandb:
             self.wandb_run.log(losses)
 
@@ -255,3 +254,8 @@ class Visualizer():
         print(message)  # print the message
         with open(self.log_name, "a") as log_file:
             log_file.write('%s\n' % message)  # save the message
+
+        def close(self):
+            """Close the TensorBoard SummaryWriter."""
+            if self.writer is not None:
+                self.writer.close()
