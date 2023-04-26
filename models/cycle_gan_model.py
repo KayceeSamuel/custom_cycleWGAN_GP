@@ -149,7 +149,7 @@ class CycleGANModel(BaseModel):
         self.loss_D_A = self.backward_D_basic(self.netD_A, self.real_B, fake_B)
         gradient_pen = self.gradient_penalty(self.real_B, self.fake_B.detach(), self.netD_A) #implementing WGAN_GP
         self.loss_D_A = self.loss_D_A + self.opt.lambda_gp * gradient_pen #implementing WGAN_GP
-        self.loss_D_A.backward() #implementing WGAN_GP
+        self.loss_D_A.backward(retain_graph=True) #implementing WGAN_GP
 
     def backward_D_B(self):
         """Calculate GAN loss for discriminator D_B"""
@@ -157,7 +157,7 @@ class CycleGANModel(BaseModel):
         self.loss_D_B = self.backward_D_basic(self.netD_B, self.real_A, fake_A)
         gradient_pen = self.gradient_penalty(self.real_A, self.fake_A.detach(), self.netD_B) #implementing WGAN_GP
         self.loss_D_B = self.loss_D_B + self.opt.lambda_gp * gradient_pen #implementing WGAN_GP
-        self.loss_D_B.backward() #implementing WGAN_GP
+        self.loss_D_B.backward(retain_graph=True) #implementing WGAN_GP
 
     def backward_G(self):
         """Calculate the loss for generators G_A and G_B"""
