@@ -186,25 +186,30 @@ class CycleGANModel(BaseModel):
         self.loss_cycle_B = self.criterionCycle(self.rec_B, self.real_B) * lambda_B
         # combined loss and calculate gradients
         self.loss_G = self.loss_G_A + self.loss_G_B + self.loss_cycle_A + self.loss_cycle_B + self.loss_idt_A + self.loss_idt_B
-        self.loss_G.backward(retain_graph=True)
+        self.loss_G.backward()
 
     def optimize_parameters(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         # forward
         self.forward()      # compute fake images and reconstruction images.
-        # G_A and G_B
-        self.set_requires_grad([self.netD_A, self.netD_B], False)  # Ds require no gradients when optimizing Gs
-        self.optimizer_G.zero_grad()  # set G_A and G_B's gradients to zero
-        self.backward_G()             # calculate gradients for G_A and G_B
-        self.optimizer_G.step()       # update G_A and G_B's weights
+
         # D_A and D_B
         self.set_requires_grad([self.netD_A, self.netD_B], True)
+
         #Below was added as WCGAN implementation
         for _ in range(self.opt.n_critic):
             self.optimizer_D.zero_grad()   # set D_A and D_B's gradients to zero
             self.backward_D_A()      # calculate gradients for D_A
             self.backward_D_B()      # calculate graidents for D_B
             self.optimizer_D.step()  # update D_A and D_B's weights
+        
+        # G_A and G_B
+        self.set_requires_grad([self.netD_A, self.netD_B], False)  # Ds require no gradients when optimizing Gs
+        self.optimizer_G.zero_grad()  # set G_A and G_B's gradients to zero
+        self.backward_G()             # calculate gradients for G_A and G_B
+        self.optimizer_G.step()       # update G_A and G_B's weights
+
+
 
 
         #self.optimizer_D.zero_grad()   # set D_A and D_B's gradients to zero #implementing WGAN
