@@ -143,21 +143,21 @@ class CycleGANModel(BaseModel):
         loss_D.backward()
         return loss_D
 
-    def backward_D_A(self):
+    def backward_D_A(self, retain_graph=False):
         """Calculate GAN loss for discriminator D_A"""
         fake_B = self.fake_B_pool.query(self.fake_B)
         self.loss_D_A = self.backward_D_basic(self.netD_A, self.real_B, fake_B)
         gradient_pen = self.gradient_penalty(self.real_B, self.fake_B.detach(), self.netD_A) #implementing WGAN_GP
         self.loss_D_A = self.loss_D_A + self.opt.lambda_gp * gradient_pen #implementing WGAN_GP
-        self.loss_D_A.backward() #implementing WGAN_GP
+        self.loss_D_A.backward(retain_graph=retain_graph) # Add retain_graph argument
 
-    def backward_D_B(self):
+    def backward_D_B(self, retain_graph=False):
         """Calculate GAN loss for discriminator D_B"""
         fake_A = self.fake_A_pool.query(self.fake_A)
         self.loss_D_B = self.backward_D_basic(self.netD_B, self.real_A, fake_A)
         gradient_pen = self.gradient_penalty(self.real_A, self.fake_A.detach(), self.netD_B) #implementing WGAN_GP
         self.loss_D_B = self.loss_D_B + self.opt.lambda_gp * gradient_pen #implementing WGAN_GP
-        self.loss_D_B.backward() #implementing WGAN_GP
+        self.loss_D_B.backward(retain_graph=retain_graph) # Add retain_graph argument
 
     def backward_G(self):
         """Calculate the loss for generators G_A and G_B"""
@@ -196,12 +196,17 @@ class CycleGANModel(BaseModel):
         # D_A and D_B
         self.set_requires_grad([self.netD_A, self.netD_B], True)
 
+        
         #Below was added as WCGAN implementation
         for _ in range(self.opt.n_critic):
             self.optimizer_D.zero_grad()   # set D_A and D_B's gradients to zero
-            self.backward_D_A()      # calculate gradients for D_A
-            self.backward_D_B()      # calculate graidents for D_B
+            self.backward_D_A(retain_graph=True if _ < (self.opt.n_critic - 1) else False)  # Add conditional retain_graph
+            self.backward_D_B(retain_graph=True if _ < (self.opt.n_critic - 1) else False)  # Add conditional retain_graph
             self.optimizer_D.step()  # update D_A and D_B's weights
+            if _ < (self.opt.n_critic - 1):
+                self.set_requires_grad([self.netD_A, self.netD_B], False)  # Ds require no gradients when optimizing Gs
+                self.forward()      # compute fake images and reconstruction images.
+                self.set_requires_grad([self.netD_A, self.netD_B], True)
             
         
         # G_A and G_B
