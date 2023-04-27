@@ -57,9 +57,16 @@ if __name__ == '__main__':
                 visualizer.display_current_results(model.get_current_visuals(), epoch, save_result)
 
             # ADDED: Update learning rates after calling optimize_parameters
+
+            # Call the update_learning_rate() function after the optimizer steps
             optimizer_G = model.optimizer_G
             optimizer_D = model.optimizer_D
-            model.update_learning_rate([optimizer_G, optimizer_D], print_lr=(epoch == 1 or epoch % opt.save_epoch_freq == 0))
+            update_lr = (i == len(dataset) - 1)
+            print_lr = update_lr and (epoch == 1 or epoch % opt.save_epoch_freq == 0)
+            model.update_learning_rate([optimizer_G, optimizer_D], update_lr=update_lr, print_lr=print_lr)
+            # optimizer_G = model.optimizer_G
+            # optimizer_D = model.optimizer_D
+            # model.update_learning_rate([optimizer_G, optimizer_D], print_lr=(epoch == 1 or epoch % opt.save_epoch_freq == 0))
 
             if total_iters % opt.print_freq == 0:    # print training losses and save logging information to the disk
                 losses = model.get_current_losses()
