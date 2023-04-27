@@ -40,7 +40,7 @@ if __name__ == '__main__':
         iter_data_time = time.time()    # timer for data loading per iteration
         epoch_iter = 0                  # the number of training iterations in current epoch, reset to 0 every epoch
         visualizer.reset()              # reset the visualizer: make sure it saves the results to HTML at least once every epoch
-        model.update_learning_rate()    # update learning rates in the beginning of every epoch.
+        #model.update_learning_rate()    # update learning rates in the beginning of every epoch. taken out to fix bug
         for i, data in enumerate(dataset):  # inner loop within one epoch
             iter_start_time = time.time()  # timer for computation per iteration
             if total_iters % opt.print_freq == 0:
@@ -55,6 +55,12 @@ if __name__ == '__main__':
                 save_result = total_iters % opt.update_html_freq == 0
                 model.compute_visuals()
                 visualizer.display_current_results(model.get_current_visuals(), epoch, save_result)
+
+            # ADDED: Update learning rates after calling optimize_parameters
+            optimizer_G = model.optimizer_G
+            optimizer_D_A = model.optimizer_D_A
+            optimizer_D_B = model.optimizer_D_B
+            model.update_learning_rate([optimizer_G, optimizer_D_A, optimizer_D_B])
 
             if total_iters % opt.print_freq == 0:    # print training losses and save logging information to the disk
                 losses = model.get_current_losses()
