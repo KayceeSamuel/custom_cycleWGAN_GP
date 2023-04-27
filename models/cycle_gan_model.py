@@ -140,7 +140,7 @@ class CycleGANModel(BaseModel):
         # Combined loss and calculate gradients
         loss_D = loss_D_real + loss_D_fake #This is for cycle WGAN-GP
         #loss_D = (loss_D_real + loss_D_fake) * 0.5 #This is initial cycleGAN
-        loss_D.backward()
+        loss_D.backward(retain_graph=True)
         return loss_D
 
     def backward_D_A(self, retain_graph=False):
