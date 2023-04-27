@@ -104,12 +104,12 @@ class Visualizer():
         """Reset the self.saved status"""
         self.saved = False
 
-    def create_visdom_connections(self):
-        """If the program could not connect to Visdom server, this function will start a new server at port < self.port > """
-        cmd = sys.executable + ' -m visdom.server -p %d &>/dev/null &' % self.port
-        print('\n\nCould not connect to Visdom server. \n Trying to start a server....')
-        print('Command: %s' % cmd)
-        Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+    # def create_visdom_connections(self):
+    #     """If the program could not connect to Visdom server, this function will start a new server at port < self.port > """
+    #     cmd = sys.executable + ' -m visdom.server -p %d &>/dev/null &' % self.port
+    #     print('\n\nCould not connect to Visdom server. \n Trying to start a server....')
+    #     print('Command: %s' % cmd)
+    #     Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
 
     def display_current_results(self, visuals, epoch, save_result):
         """Display current results on visdom; save current results to an HTML file.
@@ -119,8 +119,8 @@ class Visualizer():
             epoch (int) - - the current epoch
             save_result (bool) - - if save the current results to an HTML file
         """
-        if self.vis is None:
-            return
+        #if self.vis is None:
+        #return
         if self.display_id > 0:  # show images in the browser using visdom
             ncols = self.ncols
             if ncols > 0:        # show all the images in one visdom panel
