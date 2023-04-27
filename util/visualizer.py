@@ -312,7 +312,7 @@ class Visualizer():
         with open(self.log_name, "a") as log_file:
             log_file.write('%s\n' % message)  # save the message
 
-        def close(self):
-            """Close the TensorBoard SummaryWriter."""
-            if self.writer is not None:
-                self.writer.close()
+    def close(self):
+        """Close the TensorBoard SummaryWriter."""
+        if self.writer is not None:
+            self.writer.close()
