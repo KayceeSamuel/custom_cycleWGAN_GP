@@ -59,7 +59,7 @@ if __name__ == '__main__':
             # ADDED: Update learning rates after calling optimize_parameters
             optimizer_G = model.optimizer_G
             optimizer_D = model.optimizer_D
-            model.update_learning_rate([optimizer_G, optimizer_D])
+            model.update_learning_rate([optimizer_G, optimizer_D], print_lr=(epoch == 1 or epoch % opt.save_epoch_freq == 0))
 
             if total_iters % opt.print_freq == 0:    # print training losses and save logging information to the disk
                 losses = model.get_current_losses()
