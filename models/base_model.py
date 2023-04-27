@@ -125,7 +125,7 @@ class BaseModel(ABC):
     #     lr = self.optimizers[0].param_groups[0]['lr']
     #     print('learning rate %.7f -> %.7f' % (old_lr, lr))
 
-    def update_learning_rate(self, optimizers):
+    def update_learning_rate(self, optimizers, print_lr=True):
         """Update learning rates for all the networks; called at the end of every epoch"""
         old_lr = optimizers[0].param_groups[0]['lr']
         for scheduler in self.schedulers:
