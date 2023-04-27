@@ -58,8 +58,7 @@ if __name__ == '__main__':
 
             # ADDED: Update learning rates after calling optimize_parameters
             optimizer_G = model.optimizer_G
-            optimizer_D_A = model.optimizer_D_A
-            optimizer_D_B = model.optimizer_D_B
+            optimizer_D = model.optimizer_D
             model.update_learning_rate([optimizer_G, optimizer_D_A, optimizer_D_B])
 
             if total_iters % opt.print_freq == 0:    # print training losses and save logging information to the disk
