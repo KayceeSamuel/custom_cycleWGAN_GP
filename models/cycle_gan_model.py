@@ -225,6 +225,7 @@ class CycleGANModel(BaseModel):
 
     # Add the gradient penalty for the cycleWGAN-GP
     def gradient_penalty(self, real_data, fake_data, netD):
+        """Calculates the gradient penalty loss for WGAN"""
         batch_size = real_data.size(0)
         alpha = torch.rand(batch_size, 1, 1, 1).to(self.device)
         interpolates = (alpha * real_data + ((1 - alpha) * fake_data)).requires_grad_(True)
