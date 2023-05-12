@@ -37,6 +37,8 @@ class TrainOptions(BaseOptions):
         parser.add_argument('--lr_decay_iters', type=int, default=50, help='multiply by a gamma every lr_decay_iters iterations')
         parser.add_argument('--lambda_gp', type=float, default=10.0, help='weight for gradient penalty') #implementing WGAN_GP
         parser.add_argument('--n_critic', type=int, default=5, help='number of critic updates per generator update') #implementing WGAN_GP
+        parser.add_argument('--fid_freq', type=int, default=500, help='calculate FID score every fid_freq iterations')
+
 
 
 

@@ -85,7 +85,7 @@ if __name__ == '__main__':
                 model.save_networks(save_suffix)
             
             # Calculate and save FID score
-            if total_iters % opt.fid_freq == 0:
+            if total_iters % opt.fid_freq == 0: # calculate FID score every fid_freq iterations
                 with torch.no_grad():
                     model.forward()
                     real_images = model.real_A if opt.direction == 'AtoB' else model.real_B
