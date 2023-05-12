@@ -27,6 +27,23 @@ from pytorch_fid import fid_score
 from torchvision.transforms import Resize
 import torch
 
+
+
+def calculate_fid(real_images, generated_images, batch_size, device):
+    real_resized = [Resize((299, 299))(img) for img in real_images]
+    gen_resized = [Resize((299, 299))(img) for img in generated_images]
+
+    real_resized_tensor = torch.stack(real_resized).to(device)
+    gen_resized_tensor = torch.stack(gen_resized).to(device)
+
+    fid = fid_score.calculate_fid_given_paths(
+        real_resized_tensor,
+        gen_resized_tensor,
+        batch_size=batch_size,
+        device=device
+    )
+    return fid
+
 if __name__ == '__main__':
     opt = TrainOptions().parse()   # get training options
     dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
@@ -103,18 +120,5 @@ if __name__ == '__main__':
         print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
         visualizer.close()
 
-def calculate_fid(real_images, generated_images, batch_size, device):
-    real_resized = [Resize((299, 299))(img) for img in real_images]
-    gen_resized = [Resize((299, 299))(img) for img in generated_images]
 
-    real_resized_tensor = torch.stack(real_resized).to(device)
-    gen_resized_tensor = torch.stack(gen_resized).to(device)
-
-    fid = fid_score.calculate_fid_given_paths(
-        real_resized_tensor,
-        gen_resized_tensor,
-        batch_size=batch_size,
-        device=device
-    )
-    return fid
 
