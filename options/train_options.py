@@ -39,6 +39,8 @@ class TrainOptions(BaseOptions):
         parser.add_argument('--n_critic', type=int, default=5, help='number of critic updates per generator update') #implementing WGAN_GP
         parser.add_argument('--fid_freq', type=int, default=500, help='calculate FID score every fid_freq iterations')
 
+        parser.add_argument('--device', type=str, default='cuda' if torch.cuda.is_available() else 'cpu', help='device to use for computations. Can be either "cuda" or "cpu"')
+
 
 
 
