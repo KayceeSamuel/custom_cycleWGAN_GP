@@ -106,6 +106,7 @@ class Visualizer():
         self.saved = False
 
     def display_current_results(self, visuals, epoch, save_result):
+        print('Visuals keys:', visuals.keys())
         """Display current results on visdom; save current results to an HTML file.
 
         Parameters:
@@ -161,7 +162,7 @@ class Visualizer():
             webpage.save()
 
         #Calculate and print FID score
-        if 'real' in visuals and 'fake' in visuals:
+        if 'real' in visuals and 'fake' in visuals and epoch % opt.fid_freq == 0:
             real_image = visuals['real']
             generated_images = visuals['fake']
             fid = calculate_fid(real_image, generated_images, opt.batch_size, opt.device)
@@ -179,6 +180,7 @@ class Visualizer():
         if not hasattr(self, 'plot_data'):
             self.plot_data = {'X': [], 'Y': [], 'legend': list(losses.keys())}
         self.plot_data['X'].append(epoch + counter_ratio)
+        
         self.plot_data['Y'].append([losses[k] for k in self.plot_data['legend']])
 
         for index, loss_name in enumerate(self.plot_data['legend']):
@@ -188,7 +190,7 @@ class Visualizer():
             self.wandb_run.log(losses)
 
     # losses: same format as |losses| of plot_current_losses
-    def print_current_losses(self, epoch, iters, losses, t_comp, t_data):
+    def print_current_losses(self, epoch, iters, losses, t_comp, t_data, visuals):
         """print current losses on console; also save the losses to the disk
 
         Parameters:
@@ -198,7 +200,8 @@ class Visualizer():
             t_comp (float) -- computational time per data point (normalized by batch_size)
             t_data (float) -- data loading time per data point (normalized by batch_size)
         """
-        message = '(epoch: %d, iters: %d, time: %.3f, data: %.3f) ' % (epoch, iters, t_comp, t_data)
+        message = '(epoch: %d, iters: %d, time: %.3f, data: %.3f) ' % (epoch, iters, t_comp, t_data, visuals.keys())
+        # print('Visuals keys:', visuals.keys())
         for k, v in losses.items():
             message += '%s: %.3f ' % (k, v)
 
