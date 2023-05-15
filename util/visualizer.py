@@ -160,6 +160,13 @@ class Visualizer():
                 webpage.add_images(ims, txts, links, width=self.win_size)
             webpage.save()
 
+        #Calculate and print FID score
+        if 'real' in visuals and 'fake' in visuals:
+            real_image = visuals['real']
+            generated_images = visuals['fake']
+            fid = calculate_fid(real_image, generated_images, opt.batch_size, opt.device)
+            print('FID score at epoch %d: %f' % (epoch, fid))
+
 
     def plot_current_losses(self, epoch, counter_ratio, losses):
         """display the current losses on visdom display: dictionary of error labels and values
