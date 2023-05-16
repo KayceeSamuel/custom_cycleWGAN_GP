@@ -186,6 +186,10 @@ class Visualizer():
             fid = self.calculate_fid(real_image, generated_images, self.opt.batch_size, self.opt.device)
             print('FID score at epoch %d: %f' % (epoch, fid))
 
+            # Save the FID score to a file
+            with open(os.path.join(self.output_path, 'fid_score.txt'), 'w') as f:
+                f.write(str(fid))
+
 
     def plot_current_losses(self, epoch, counter_ratio, losses):
         """display the current losses on visdom display: dictionary of error labels and values
