@@ -117,7 +117,8 @@ class Visualizer():
     def reset(self):
         """Reset the self.saved status"""
         self.saved = False
-
+        
+    @staticmethod
     def clear_dir(dir_path):
         for file_name in os.listdir(dir_path):
             file_path = os.path.join(dir_path, file_name)
