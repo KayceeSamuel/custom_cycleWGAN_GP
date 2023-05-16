@@ -117,7 +117,6 @@ class Visualizer():
         self.saved = False
 
     def display_current_results(self, visuals, epoch, save_result):
-        print('Visuals keys:', visuals.keys())
         """Display current results on visdom; save current results to an HTML file.
 
         Parameters:
@@ -181,10 +180,10 @@ class Visualizer():
             webpage.save()
 
         #Calculate and print FID score
-        if 'real_A' in visuals and 'fake_B' in visuals and epoch % opt.fid_freq == 0:
+        if 'real_A' in visuals and 'fake_B' in visuals and epoch % self.opt.fid_freq == 0:
             real_image = visuals['real_A']
             generated_images = visuals['fake_B']
-            fid = calculate_fid(real_image, generated_images, opt.batch_size, opt.device)
+            fid = self.calculate_fid(real_image, generated_images, self.opt.batch_size, self.opt.device)
             print('FID score at epoch %d: %f' % (epoch, fid))
 
 
