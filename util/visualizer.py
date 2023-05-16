@@ -109,7 +109,7 @@ class Visualizer():
             log_file.write('================ Training Loss (%s) ================\n' % now)
 
     def calculate_fid(self, real_images_dir, fake_images_dir, batch_size, device):
-        fid = fid_score.calculate_fid_given_paths([real_images_dir, fake_images_dir], batch_size, device)
+        fid = fid_score.calculate_fid_given_paths([real_images_dir, fake_images_dir], batch_size, device, dims=2048)
         return fid
 
     def reset(self):
