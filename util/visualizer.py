@@ -180,7 +180,7 @@ class Visualizer():
             webpage.save()
 
         #Calculate and print FID score
-        if 'real_A' in visuals and 'fake_B' in visuals and epoch % self.opt.fid_freq == 4:
+        if 'real_A' in visuals and 'fake_B' in visuals and epoch % self.opt.fid_freq == 0:
             real_image = visuals['real_A']
             generated_images = visuals['fake_B']
             fid = self.calculate_fid(real_image, generated_images, self.opt.batch_size, self.opt.device)
