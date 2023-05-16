@@ -117,7 +117,7 @@ class Visualizer():
     def reset(self):
         """Reset the self.saved status"""
         self.saved = False
-        
+
     @staticmethod
     def clear_dir(dir_path):
         for file_name in os.listdir(dir_path):
@@ -168,7 +168,7 @@ class Visualizer():
             self.saved = True
             # save images to the disk
             for label, image in visuals.items():
-                for idx, image in enumerate(images):
+                for idx, image in enumerate(image):
                     image_numpy = util.tensor2im(image)
                     img_path = os.path.join(self.img_dir, 'epoch%.3d_%s.png' % (epoch, label, idx))
                     util.save_image(image_numpy, img_path)
