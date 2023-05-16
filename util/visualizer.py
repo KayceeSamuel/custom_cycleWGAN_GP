@@ -84,6 +84,9 @@ class Visualizer():
         self.current_epoch = 0
         self.ncols = opt.display_ncols
         self.writer = SummaryWriter('logs/' + opt.name)
+
+        #Define web_dir, real_image_dir and fake_image_dir
+        self.web_dir = os.path.join(opt.checkpoints_dir, opt.name, 'web')
         self.real_image_dir = os.path.join(self.web_dir, 'real_images')
         self.fake_image_dir = os.path.join(self.web_dir, 'fake_images')
         util.mkdirs([self.real_image_dir, self.fake_image_dir])
@@ -95,7 +98,7 @@ class Visualizer():
             self.wandb_run._label(repo='CycleGAN-and-pix2pix')
 
         if self.use_html:  # create an HTML object at <checkpoints_dir>/web/; images will be saved under <checkpoints_dir>/web/images/
-            self.web_dir = os.path.join(opt.checkpoints_dir, opt.name, 'web')
+            # self.web_dir = os.path.join(opt.checkpoints_dir, opt.name, 'web')
             self.img_dir = os.path.join(self.web_dir, 'images')
             print('create web directory %s...' % self.web_dir)
             util.mkdirs([self.web_dir, self.img_dir])
