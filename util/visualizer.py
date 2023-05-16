@@ -7,6 +7,7 @@ from . import util, html
 from subprocess import Popen, PIPE
 from torch.utils.tensorboard import SummaryWriter
 import torch
+from pytorch_fid import fid_score
 
 
 
@@ -83,6 +84,9 @@ class Visualizer():
         self.current_epoch = 0
         self.ncols = opt.display_ncols
         self.writer = SummaryWriter('logs/' + opt.name)
+        self.real_image_dir = os.path.join(self.web_dir, 'real_images')
+        self.fake_image_dir = os.path.join(self.web_dir, 'fake_images')
+        util.mkdirs([self.real_image_dir, self.fake_image_dir])
 
 
 
@@ -100,6 +104,10 @@ class Visualizer():
         with open(self.log_name, "a") as log_file:
             now = time.strftime("%c")
             log_file.write('================ Training Loss (%s) ================\n' % now)
+
+    def calculate_fid(self, real_images_dir, fake_images_dir, batch_size, device):
+        fid = fid_score.calculate_fid_given_paths([real_images_dir, fake_images_dir], batch_size, device)
+        return fid
 
     def reset(self):
         """Reset the self.saved status"""
@@ -146,6 +154,14 @@ class Visualizer():
                 img_path = os.path.join(self.img_dir, 'epoch%.3d_%s.png' % (epoch, label))
                 util.save_image(image_numpy, img_path)
 
+            # additionally save 'real_A' and 'fake_B' images into separate directories
+                if label == 'real_A':
+                    img_path_real = os.path.join(self.real_image_dir, 'epoch%.3d_%s.png' % (epoch, label))
+                    util.save_image(image_numpy, img_path_real)
+                elif label == 'fake_B':
+                    img_path_fake = os.path.join(self.fake_image_dir, 'epoch%.3d_%s.png' % (epoch, label))
+                    util.save_image(image_numpy, img_path_fake)
+
             # update website
             webpage = html.HTML(self.web_dir, 'Experiment name = %s' % self.name, refresh=1)
             for n in range(epoch, 0, -1):
@@ -162,9 +178,9 @@ class Visualizer():
             webpage.save()
 
         #Calculate and print FID score
-        if 'real' in visuals and 'fake' in visuals and epoch % opt.fid_freq == 0:
-            real_image = visuals['real']
-            generated_images = visuals['fake']
+        if 'real_A' in visuals and 'fake_B' in visuals and epoch % opt.fid_freq == 0:
+            real_image = visuals['real_A']
+            generated_images = visuals['fake_B']
             fid = calculate_fid(real_image, generated_images, opt.batch_size, opt.device)
             print('FID score at epoch %d: %f' % (epoch, fid))
 

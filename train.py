@@ -23,26 +23,15 @@ from options.train_options import TrainOptions
 from data import create_dataset
 from models import create_model
 from util.visualizer import Visualizer
-from pytorch_fid import fid_score
+# from pytorch_fid import fid_score
 from torchvision.transforms import Resize
 import torch
 
 
 
-def calculate_fid(real_images, generated_images, batch_size, device):
-    real_resized = [Resize((299, 299))(img) for img in real_images]
-    gen_resized = [Resize((299, 299))(img) for img in generated_images]
-
-    real_resized_tensor = torch.stack(real_resized).to(device)
-    gen_resized_tensor = torch.stack(gen_resized).to(device)
-
-    fid = fid_score.calculate_fid_given_paths(
-        real_resized_tensor,
-        gen_resized_tensor,
-        batch_size=batch_size,
-        device=device
-    )
-    return fid
+# def calculate_fid(real_images_dir, fake_images_dir, batch_size, device):
+#     fid = fid_score.calculate_fid_given_paths([real_images_dir, fake_images_dir], batch_size, device)
+#     return fid
 
 if __name__ == '__main__':
     opt = TrainOptions().parse()   # get training options
@@ -102,14 +91,14 @@ if __name__ == '__main__':
                 model.save_networks(save_suffix)
             
             # Calculate and save FID score
-            if total_iters % opt.fid_freq == 0: # calculate FID score every fid_freq iterations
-                with torch.no_grad():
-                    model.forward()
-                    real_images = model.real_A if opt.direction == 'AtoB' else model.real_B
-                    generated_images = model.fake_B if opt.direction == 'AtoB' else model.fake_A
-                    fid = calculate_fid(real_images, generated_images, opt.batch_size, opt.device)
-                    print('FID score at iteration %d: %f' % (total_iters, fid))
-                    fid_scores.append(fid)
+            # if total_iters % opt.fid_freq == 0: # calculate FID score every fid_freq iterations
+            #     with torch.no_grad():
+            #         model.forward()
+            #         real_images = model.real_A if opt.direction == 'AtoB' else model.real_B
+            #         generated_images = model.fake_B if opt.direction == 'AtoB' else model.fake_A
+            #         fid = calculate_fid(real_images, generated_images, opt.batch_size, opt.device)
+            #         print('FID score at iteration %d: %f' % (total_iters, fid))
+            #         fid_scores.append(fid)
 
             iter_data_time = time.time()
         if epoch % opt.save_epoch_freq == 0:              # cache our model every <save_epoch_freq> epochs
