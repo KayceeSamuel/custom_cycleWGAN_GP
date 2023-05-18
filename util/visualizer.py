@@ -170,7 +170,7 @@ class Visualizer():
             for label, image in visuals.items():
                 for idx, image in enumerate(image):
                     image_numpy = util.tensor2im(image)
-                    img_path = os.path.join(self.img_dir, 'epoch%.3d_%s.png' % (epoch, label, idx))
+                    img_path = os.path.join(self.img_dir, 'epoch%.3d_%s_%d.png' % (epoch, label, idx))
                     util.save_image(image_numpy, img_path)
 
             # additionally save 'real_A' and 'fake_B' images into separate directories
