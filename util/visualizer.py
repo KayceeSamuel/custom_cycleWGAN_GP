@@ -86,6 +86,7 @@ class Visualizer():
         self.current_epoch = 0
         self.ncols = opt.display_ncols
         self.writer = SummaryWriter('logs/' + opt.name)
+        self.output_path = opt.output_path
 
         #Define web_dir, real_image_dir and fake_image_dir
         self.web_dir = os.path.join(opt.checkpoints_dir, opt.name, 'web')
