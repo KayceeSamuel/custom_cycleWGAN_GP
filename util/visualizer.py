@@ -202,11 +202,10 @@ class Visualizer():
 
         #Calculate and print FID score
         if 'real_A' in visuals and 'fake_B' in visuals and epoch % self.opt.fid_freq == 0:
-            real_image = visuals['real_A']
-            generated_images = visuals['fake_B']
+            # real_image = visuals['real_A']
+            # generated_images = visuals['fake_B']
 
-
-            fid = self.calculate_fid(real_image, generated_images, self.opt.batch_size, self.opt.device)
+            fid = self.calculate_fid(self.real_image_dir, self.fake_image_dir, self.opt.batch_size, self.opt.device)
             print('FID score at epoch %d: %f' % (epoch, fid))
 
             # Save the FID score to a file
