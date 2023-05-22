@@ -172,8 +172,8 @@ class Visualizer():
                 for idx, image in enumerate(image):
                     image_numpy = util.tensor2im(image)
                     img_path = os.path.join(self.img_dir, 'epoch%.3d_%s_%d.png' % (epoch, label, idx))
-                    # print("Shape of image_numpy:", image_numpy.shape)  # Add these two lines
-                    # print("Datatype of image_numpy:", image_numpy.dtype)
+                    print("Shape of image_numpy:", image_numpy.shape)  # Add these two lines
+                    print("Datatype of image_numpy:", image_numpy.dtype)
                     util.save_image(image_numpy, img_path)
 
             # additionally save 'real_A' and 'fake_B' images into separate directories
