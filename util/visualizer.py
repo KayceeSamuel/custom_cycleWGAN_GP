@@ -173,6 +173,7 @@ class Visualizer():
                     image_numpy = util.tensor2im(image)
                     img_path = os.path.join(self.img_dir, 'epoch%.3d_%s_%d.png' % (epoch, label, idx))
                     print("Shape of image_numpy:", image_numpy.shape)  # Add these two lines
+                    print("Min and Max of image_numpy:", image_numpy.min(), image_numpy.max())
                     print("Datatype of image_numpy:", image_numpy.dtype)
                     util.save_image(image_numpy, img_path)
 
