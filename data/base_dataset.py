@@ -82,6 +82,7 @@ def get_transform(opt, params=None, grayscale=False, method=transforms.Interpola
     transform_list = []
     if grayscale:
         transform_list.append(transforms.Grayscale(1))
+        print("Adding grayscale transformation")   # print message here
     if 'resize' in opt.preprocess:
         osize = [opt.load_size, opt.load_size]
         transform_list.append(transforms.Resize(osize, method))
