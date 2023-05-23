@@ -49,6 +49,10 @@ def tensor2im(input_image, imtype=np.uint8):
 
     print("image_numpy shape:", image_numpy.shape)
     print("specified axes:", (1, 2, 0))
+    if image_numpy.ndim == 2:  # Grayscale image
+        image_numpy = np.expand_dims(image_numpy, axis=-1)  # Add single channel dimension
+        image_numpy = np.repeat(image_numpy, 3, axis=-1)  # Repeat single channel across all three channels
+
     image_numpy = np.transpose(image_numpy, (1, 2, 0))  # Transpose dimensions to (H, W, C)
 
     # Rescale and convert to RGB
