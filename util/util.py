@@ -6,36 +6,53 @@ from PIL import Image
 import os
 
 
-def tensor2im(input_image, imtype=np.uint8):
-    """"Converts a Tensor array into a numpy image array.
+# def tensor2im(input_image, imtype=np.uint8):
+#     """"Converts a Tensor array into a numpy image array.
 
-    Parameters:
-        input_image (tensor) --  the input image tensor array
-        imtype (type)        --  the desired type of the converted numpy array
-    """
+#     Parameters:
+#         input_image (tensor) --  the input image tensor array
+#         imtype (type)        --  the desired type of the converted numpy array
+#     """
+#     if not isinstance(input_image, np.ndarray):
+#         if isinstance(input_image, torch.Tensor):  # get the data from a variable
+#             image_tensor = input_image.data
+#             print('image_tensor shape:', image_tensor.shape)
+#         else:
+#             return input_image
+#         image_numpy = image_tensor[0].cpu().float().numpy()  # convert it into a numpy array
+#         print("The image ndim is:", image_numpy.ndim)
+#         if image_numpy.ndim == 4: # batch of images
+#             image_numpy = image_numpy[0]
+#         elif image_numpy.ndim == 3: # single RGB image
+#             image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0
+#         elif image_numpy.shape[0] == 1:  # grayscale to RGB
+#             image_numpy = np.tile(image_numpy, (3, 1, 1))
+#             image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0
+#         elif image_numpy.ndim == 2: #grayscale image
+#             image_numpy = np.stack((image_numpy,)*3, axis=-1)
+#             image_numpy = (image_numpy + 1) / 2.0 * 255.0
+
+#         #image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0  # post-processing: tranpose and scaling
+#     else:  # if it is a numpy array, do nothing
+#         image_numpy = input_image
+#     return image_numpy.astype(imtype)
+
+def tensor2im(input_image, imtype=np.uint8):
     if not isinstance(input_image, np.ndarray):
-        if isinstance(input_image, torch.Tensor):  # get the data from a variable
+        if isinstance(input_image, torch.Tensor):
             image_tensor = input_image.data
-            print('image_tensor shape:', image_tensor.shape)
+            image_numpy = image_tensor[0].cpu().float().numpy()
         else:
             return input_image
-        image_numpy = image_tensor[0].cpu().float().numpy()  # convert it into a numpy array
-        print("The image ndim is:", image_numpy.ndim)
-        if image_numpy.ndim == 4: # batch of images
-            image_numpy = image_numpy[0]
-        elif image_numpy.ndim == 3: # single RGB image
-            image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0
-        elif image_numpy.shape[0] == 1:  # grayscale to RGB
-            image_numpy = np.tile(image_numpy, (3, 1, 1))
-            image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0
-        elif image_numpy.ndim == 2: #grayscale image
-            image_numpy = np.stack((image_numpy,)*3, axis=-1)
-            image_numpy = (image_numpy + 1) / 2.0 * 255.0
-
-        #image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0  # post-processing: tranpose and scaling
-    else:  # if it is a numpy array, do nothing
+    else:
         image_numpy = input_image
-    return image_numpy.astype(imtype)
+
+    # Rescale and convert to RGB
+    image_numpy = (image_numpy - image_numpy.min()) / (image_numpy.max() - image_numpy.min())  # Rescale to [0, 1]
+    image_numpy = (image_numpy * 255).astype(np.uint8)  # Convert to [0, 255]
+    image_numpy = np.transpose(image_numpy, (1, 2, 0))  # Transpose dimensions to (H, W, C)
+
+    return image_numpy
 
 
 def diagnose_network(net, name='network'):
