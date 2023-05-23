@@ -195,6 +195,14 @@ class Visualizer():
 
                 for label, image_numpy in visuals.items():
                     image_numpy = util.tensor2im(image)
+
+                    # Check the data source and channel information
+                    print(f"Image: {label} (index: {idx})")
+                    print("Shape:", image_numpy.shape)
+                    print("Min and Max:", image_numpy.min(), image_numpy.max())
+                    print("Data type:", image_numpy.dtype)
+                    print()
+                    
                     img_path = 'epoch%.3d_%s.png' % (n, label)
                     ims.append(img_path)
                     txts.append(label)
