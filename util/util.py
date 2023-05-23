@@ -20,21 +20,18 @@ def tensor2im(input_image, imtype=np.uint8):
         else:
             return input_image
         image_numpy = image_tensor[0].cpu().float().numpy()  # convert it into a numpy array
-        # if image_numpy.ndim == 4: # batch of images
-        #     image_numpy = image_numpy[0]
-        # elif image_numpy.ndim == 3: # single RGB image
-        #     image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0
-        # elif image_numpy.shape[0] == 1:  # grayscale to RGB
-        #     image_numpy = np.tile(image_numpy, (3, 1, 1))
-        #     image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0
-        # elif image_numpy.ndim == 2: #grayscale image
-        #     image_numpy = np.stack((image_numpy,)*3, axis=-1)
-        #     image_numpy = (image_numpy + 1) / 2.0 * 255.0
-
-        if image_numpy.shape[0] == 1:  # grayscale to RGB
+        if image_numpy.ndim == 4: # batch of images
+            image_numpy = image_numpy[0]
+        elif image_numpy.ndim == 3: # single RGB image
+            image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0
+        elif image_numpy.shape[0] == 1:  # grayscale to RGB
             image_numpy = np.tile(image_numpy, (3, 1, 1))
+            image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0
+        elif image_numpy.ndim == 2: #grayscale image
+            image_numpy = np.stack((image_numpy,)*3, axis=-1)
+            image_numpy = (image_numpy + 1) / 2.0 * 255.0
+
         #image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0  # post-processing: tranpose and scaling
-        image_numpy = (image_numpy + 1) / 2.0 * 255.0
     else:  # if it is a numpy array, do nothing
         image_numpy = input_image
     return image_numpy.astype(imtype)
