@@ -38,29 +38,33 @@ import os
 #     return image_numpy.astype(imtype)
 
 def tensor2im(input_image, imtype=np.uint8):
+    """"Converts a Tensor array into a numpy image array.
+
+    Parameters:
+        input_image (tensor) --  the input image tensor array
+        imtype (type)        --  the desired type of the converted numpy array
+    """
     if not isinstance(input_image, np.ndarray):
-        if isinstance(input_image, torch.Tensor):
+        if isinstance(input_image, torch.Tensor):  # get the data from a variable
             image_tensor = input_image.data
-            image_numpy = image_tensor[0].cpu().float().numpy()
+            print('image_tensor shape:', image_tensor.shape)
         else:
             return input_image
-    else:
+        image_numpy = image_tensor[0].cpu().float().numpy()  # convert it into a numpy array
+        print("The image ndim is:", image_numpy.ndim)
+        if image_numpy.ndim == 4: # batch of images
+            image_numpy = image_numpy[0]
+        elif image_numpy.ndim == 3: # single RGB image
+            image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0
+        elif image_numpy.ndim == 2: # single grayscale image
+            image_numpy = (image_numpy + 1) / 2.0 * 255.0
+            image_numpy = np.stack((image_numpy,) * 3, axis=-1)
+
+    else:  # if it is a numpy array, do nothing
         image_numpy = input_image
 
-    print("image_numpy shape:", image_numpy.shape)
-    print("specified axes:", (1, 2, 0))
-
-    if image_numpy.ndim == 2:  # Grayscale image
-        image_numpy = np.expand_dims(image_numpy, axis=-1)  # Add single channel dimension
-        image_numpy = np.repeat(image_numpy, 3, axis=-1)  # Repeat single channel across all three channels
-
-    image_numpy = np.transpose(image_numpy, (1, 2, 0))  # Transpose dimensions to (H, W, C)
-
-    # Rescale and convert to RGB
-    image_numpy = (image_numpy - image_numpy.min()) / (image_numpy.max() - image_numpy.min())  # Rescale to [0, 1]
-    image_numpy = (image_numpy * 255).astype(np.uint8)  # Convert to [0, 255]
-
     return image_numpy.astype(imtype)
+
 
 
 def diagnose_network(net, name='network'):
