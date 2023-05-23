@@ -20,6 +20,7 @@ def tensor2im(input_image, imtype=np.uint8):
         else:
             return input_image
         image_numpy = image_tensor[0].cpu().float().numpy()  # convert it into a numpy array
+        print("The image ndim is:", image_numpy.ndim)
         if image_numpy.ndim == 4: # batch of images
             image_numpy = image_numpy[0]
         elif image_numpy.ndim == 3: # single RGB image
