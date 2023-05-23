@@ -155,6 +155,8 @@ def define_G(input_nc, output_nc, ngf, netG, norm='batch', use_dropout=False, in
         net = UnetGenerator(input_nc, output_nc, 7, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
     elif netG == 'unet_256':
         net = UnetGenerator(input_nc, output_nc, 8, ngf, norm_layer=norm_layer, use_dropout=use_dropout)
+    elif netG == 'resnet_50':
+        net = ResNet50Generator(input_nc, output_nc)  # Add this option
     else:
         raise NotImplementedError('Generator model name [%s] is not recognized' % netG)
     return init_net(net, init_type, init_gain, gpu_ids)
@@ -445,6 +447,59 @@ class ResnetBlock(nn.Module):
         """Forward function (with skip connections)"""
         out = x + self.conv_block(x)  # add skip connections
         return out
+    
+class ResNet50Generator(nn.Module):
+    def __init__(self, input_nc, output_nc, ngf=64):
+        super(ResNet50Generator, self).__init__()
+        
+        # Load the pre-trained ResNet-50 model
+        resnet = models.resnet50(pretrained=True)
+        
+        # Remove the fully connected layer and the last convolutional layer
+        resnet = nn.Sequential(*list(resnet.children())[:-2])
+        
+        # Modify the first convolutional layer to accept the desired input_nc
+        resnet[0] = nn.Conv2d(input_nc, 64, kernel_size=7, stride=1, padding=3, bias=False)
+        
+        # Define the upsampling layers
+        upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+        
+        # Define the additional layers
+        self.additional_layers = nn.Sequential(
+            nn.Conv2d(2048, ngf * 8, kernel_size=3, stride=1, padding=1, bias=False),
+            nn.BatchNorm2d(ngf * 8),
+            nn.ReLU(True),
+            upsample,
+            
+            nn.Conv2d(ngf * 8, ngf * 4, kernel_size=3, stride=1, padding=1, bias=False),
+            nn.BatchNorm2d(ngf * 4),
+            nn.ReLU(True),
+            upsample,
+            
+            nn.Conv2d(ngf * 4, ngf * 2, kernel_size=3, stride=1, padding=1, bias=False),
+            nn.BatchNorm2d(ngf * 2),
+            nn.ReLU(True),
+            upsample,
+            
+            nn.Conv2d(ngf * 2, ngf, kernel_size=3, stride=1, padding=1, bias=False),
+            nn.BatchNorm2d(ngf),
+            nn.ReLU(True),
+            upsample,
+            
+            nn.Conv2d(ngf, output_nc, kernel_size=3, stride=1, padding=1),
+            nn.Tanh()
+        )
+        
+        self.resnet = resnet
+
+    def forward(self, x):
+        # Pass input through the ResNet-50 layers
+        features = self.resnet(x)
+        
+        # Apply additional layers for upsampling and generating the output
+        output = self.additional_layers(features)
+        
+        return output
 
 
 class UnetGenerator(nn.Module):
