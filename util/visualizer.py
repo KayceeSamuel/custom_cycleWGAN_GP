@@ -179,6 +179,10 @@ class Visualizer():
                     print("Shape of image_numpy:", image_numpy.shape)  # Add these two lines
                     print("Min and Max of image_numpy:", image_numpy.min(), image_numpy.max())
                     print("Datatype of image_numpy:", image_numpy.dtype)
+                    
+                    # Check if all color channels are identical
+                    if self.is_grayscale(image_numpy):
+                         print("The image appears to be grayscale")
                     util.save_image(image_numpy, img_path)
 
             # additionally save 'real_A' and 'fake_B' images into separate directories
@@ -270,3 +274,7 @@ class Visualizer():
         """Close the TensorBoard SummaryWriter."""
         if self.writer is not None:
             self.writer.close()
+
+    # add this function somewhere in your file
+    def is_grayscale(img_numpy):
+        return np.all(img_numpy[:,:,0] == img_numpy[:,:,1]) and np.all(img_numpy[:,:,0] == img_numpy[:,:,2])
