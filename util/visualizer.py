@@ -129,6 +129,9 @@ class Visualizer():
             except Exception as e: 
                 print(e)
 
+    def is_grayscale(self, img_numpy):
+        return np.all(img_numpy[:,:,0] == img_numpy[:,:,1]) and np.all(img_numpy[:,:,0] == img_numpy[:,:,2])
+
     def display_current_results(self, visuals, epoch, save_result):
         """Display current results on visdom; save current results to an HTML file.
 
@@ -275,6 +278,3 @@ class Visualizer():
         if self.writer is not None:
             self.writer.close()
 
-    # add this function somewhere in your file
-    def is_grayscale(img_numpy):
-        return np.all(img_numpy[:,:,0] == img_numpy[:,:,1]) and np.all(img_numpy[:,:,0] == img_numpy[:,:,2])
