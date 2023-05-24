@@ -170,6 +170,7 @@ class Visualizer():
             # save images to the disk
             for label, image in visuals.items():
                 for idx, image in enumerate(image):
+                    print('Checking the shape for the grayscale', image.shape)  # print shape before tensor2im
                     image_numpy = util.tensor2im(image)
                     img_path = os.path.join(self.img_dir, 'epoch%.3d_%s_%d.png' % (epoch, label, idx))
                     print("Shape of image_numpy:", image_numpy.shape)  # Add these two lines

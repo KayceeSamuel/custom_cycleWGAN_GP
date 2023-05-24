@@ -59,9 +59,7 @@ class UnalignedDataset(BaseDataset):
         B_img = Image.open(B_path).convert('RGB')
         # apply image transformation
         A = self.transform_A(A_img)
-        print('This is the A-Shape', A.shape)  # should print torch.Size([3, H, W]) for RGB images
-        B = self.transform_B(B_img)
-        print('This is the B-Shape', B.shape)  # should print torch.Size([3, H, W]) for RGB images
+        B = self.transform_B(B_img)   
 
         return {'A': A, 'B': B, 'A_paths': A_path, 'B_paths': B_path}
 
